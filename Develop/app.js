@@ -15,114 +15,151 @@ const render = require("./lib/htmlRenderer");
 // Write code to use inquirer to gather information about the development team members,
 // and to create objects for each team member (using the correct classes as blueprints!)
 
-// const Employee = new Employee
+const employee = []
+const employeeQuestions = [
+    {
+        type: "input",
+        message: "What is your name?",
+        name: "name"
+    },
+    {
+        type: "input",
+        message: "What is your ID?",
+        name: "id"
+    },
+    {
+        type: "input",
+        message: "What is your email?",
+        name: "email"
+    },
+    // {
+    //     type: "input",
+    //     message: "Enter your office number.",
+    //     when: function(answers){
+    //         return (answers.role === "manager")
+    //     },
+    //     name: "officeNumber",
+    // },
+]
 
-function askRole() {
+function askForRole() {
+    inquirer
+    .prompt(
+        {
+            message: "What is the employee role?",
+            type: "list",
+            choices: ["Engineer", "Intern"],
+            name: "role",
+        }
+    )
+    .then(response => {
+        if (response.role === "Engineer"){
+            engineerRole();
+        }
+        else if (response.role === "Intern"){
+            internRole();
+        }
+    }) 
+}
+
+
+function promptManager() {
+    console.log('-----------------')
+    console.log('Greeting Manager');
+    console.log('-----------------')
     inquirer
      .prompt([
-        {
-            type: "input",
-            message: "what is your name?",
-            name: "name"
-        },
-        {
-            type: "input",
-            message: "what is your id?",
-            name: "id"
-        },
-        {
-            type: "list",
-            message: "what is your role?",
-            choices: ["manager", "engineer", "intern"],
-            name: "role"
-        },
-        {
-            type: "input",
-            message: "what is the office number?",
-            name: "officeNumber",
-            when: function (answers) {
-                return(answers.role === "manager")
-            }
-        },
-    ])
-    .then(response => {
-        console.log(response)
-        // const employee = new Employee(response.name, response.id, response.role)
-        // if (response.role === "manager"){
-        //     // Manager(response)
-        //     manager(response);
-        // }
-        // else if (response.role === "engineer"){
-        //     engineer(response)
-        // }
-        // else if (response.role === "intern"){
-        //     intern(response)
-        // }
-
+         ...employeeQuestions,
+       {
+           type: "input",
+           message: "What is the office number?",
+           name: "officeNumber"
+       },
+   ])
+    .then( ({name, id, email, officeNumber}) => {
+        employee.push(new Manager(name, id, email, officeNumber));
+        askToContinue();         
     })
 }
 
-// const manager = [
-//     new Manager(name, id, email, officeNumber)
-
-// ];
-
-// function manager(response) {
-//     console.log(response)
-//     inquirer
-//      .prompt([
-//        {
-//            type: "input",
-//            message: "what is the office number?",
-//            name: "officeNumber"
-//        },
-//        {
-//            type: "confirm",
-//            message: "do you wnat to add another employee?",
-//            name: "addEmployee"
-//         },
-//    ])
-//     .then(response => {
-//         if (response.addEmployee){
-//             askRole()
-//         }
-//         else {
-//             console.log(response)
-//             // Manager(response)
-//             // render(response)
-//         }
-//     })
-// }
-
-function engineer() {
+function engineerRole() {
+    console.log('-----------------')
+    console.log('add a new engineer');
+    console.log('-----------------')
     inquirer
      .prompt([
+         ...employeeQuestions,
        {
            type: "input",
-           message: "what is your github username",
+           message: "what is your github username?",
            name: "github"
        },
    ])
-    .then(response => {
-        console.log(response)
+    .then(({name, id, email, github}) => {
+        const engineer = new Engineer(name, id, email, github) 
+        employee.push(engineer);
+        askToContinue();
     })
 }
 
-function intern() {
+function internRole() {
+    console.log('-----------------')
+    console.log('add a new intern');
+    console.log('-----------------')
     inquirer
      .prompt([
+         ...employeeQuestions,
        {
            type: "input",
            message: "what school do you attend?",
            name: "school"
        },
    ])
-    .then(response => {
-        console.log(response)
-    })
+   .then( ({name, id, email, school}) => {
+       const intern = new Intern(name, id, email, school)
+       employee.push(intern)
+       askToContinue();
+   })
 }
 
-askRole()
+function askToContinue() {
+    inquirer
+        .prompt({
+            message: "Do you want to add another team member?",
+            name: "addNew",
+            type: "list",
+            choices: ["Yes", "No"]
+        })
+        .then( ({ addNew}) => {
+            if (addNew === "Yes") {
+                askForRole();
+            }
+            else if (addNew === "No") {
+                console.log(employee)
+                // createHTMLFile();
+            }
+        })
+    }
+
+
+// function createHTMLFile(){
+//     const html = render(employee);
+
+//     if ( !fs.existsSynch(OUTPUT_DIR) ) {
+//         fs.mkdirSync(OUTPUT_DIR)
+//     }
+
+//     fs.writeFile(outputPath, html, (err) => {
+//         if (err) {
+//             console.log(err)
+//         }
+//         else {
+//             console.log("sucess")
+//         }
+//     })
+// }
+
+promptManager();
 
 
 // After the user has input all employees desired, call the `render` function (required
