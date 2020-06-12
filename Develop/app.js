@@ -19,17 +19,17 @@ const employee = []
 const employeeQuestions = [
     {
         type: "input",
-        message: "What is your name?",
+        message: "Name of individual?",
         name: "name"
     },
     {
         type: "input",
-        message: "What is your ID?",
+        message: "ID of individual?",
         name: "id"
     },
     {
         type: "input",
-        message: "What is your email?",
+        message: "Email of individual?",
         name: "email"
     },
     // {
@@ -43,6 +43,9 @@ const employeeQuestions = [
 ]
 
 function askForRole() {
+    console.log('-----------------')
+    console.log('Add a new employee');
+    console.log('-----------------')
     inquirer
     .prompt(
         {
@@ -78,13 +81,13 @@ function promptManager() {
    ])
     .then( ({name, id, email, officeNumber}) => {
         employee.push(new Manager(name, id, email, officeNumber));
-        askToContinue();         
+        askForRole();         
     })
 }
 
 function engineerRole() {
     console.log('-----------------')
-    console.log('add a new engineer');
+    console.log('Add a new engineer');
     console.log('-----------------')
     inquirer
      .prompt([
@@ -104,7 +107,7 @@ function engineerRole() {
 
 function internRole() {
     console.log('-----------------')
-    console.log('add a new intern');
+    console.log('Add a new intern');
     console.log('-----------------')
     inquirer
      .prompt([
@@ -136,28 +139,28 @@ function askToContinue() {
             }
             else if (addNew === "No") {
                 console.log(employee)
-                // createHTMLFile();
+                createHTMLFile();
             }
         })
     }
 
 
-// function createHTMLFile(){
-//     const html = render(employee);
+function createHTMLFile(){
+    const html = render(employee);
 
-//     if ( !fs.existsSynch(OUTPUT_DIR) ) {
-//         fs.mkdirSync(OUTPUT_DIR)
-//     }
+    if ( !fs.existsSync(OUTPUT_DIR) ) {
+        fs.mkdirSync(OUTPUT_DIR)
+    }
 
-//     fs.writeFile(outputPath, html, (err) => {
-//         if (err) {
-//             console.log(err)
-//         }
-//         else {
-//             console.log("sucess")
-//         }
-//     })
-// }
+    fs.writeFile(outputPath, html, (err) => {
+        if (err) {
+            console.log(err)
+        }
+        else {
+            console.log("HTML created.")
+        }
+    })
+}
 
 promptManager();
 
